@@ -1,6 +1,9 @@
 ### Complete Kubernetes Probe Lifecycle Flow
-
-#### Liveness and Readiness probes hit two completely different HTTP endpoints (or run different check scripts), because they are looking for two entirely different types of failures.
+#### If your container usually starts in more than ```initialDelaySeconds+failureThreshold×periodSeconds``` you should specify a startup probe that checks the same endpoint as the liveness probe  
+- The readiness probe might be the same as the liveness probe, but the existence of the readiness probe in the spec means that the Pod will start without receiving any traffic and only start receiving traffic after the probe starts succeeding.
+- You can also use a readiness probe to let a container take itself down for maintenance, by checking an endpoint specific to readiness that is different from the liveness probe.
+- When your app has a strict dependency on back-end services, you can implement both a liveness and a readiness probe. The liveness probe passes when the app itself is healthy, but the readiness probe additionally checks that each required back-end service is available. 
+#### One Implementation could be  Liveness and Readiness probes hit two completely different HTTP endpoints (or run different check scripts), because they are looking for two entirely different types of failures.
 1. The Readiness Endpoint (/healthz/ready)
    What the code checks inside: It tests external dependencies. It pings the database,
    The Business Logic: If the database goes down, this endpoint returns an HTTP 503 Service Unavailable. Kubernetes instantly cuts traffic to this Pod so users don't see broken pages, but it leaves the container running so it can reconnect automatically

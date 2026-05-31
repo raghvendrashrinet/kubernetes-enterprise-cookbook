@@ -3,7 +3,7 @@
 ```
 📁 Your Git Repository Root
  │
- ├── 📁 kustomize-overlays/
+ ├── 📁 01-Project-Basic/
  │    │
  │    ├── 📁 base/  ◄───────────────────────────┐ [1. REUSE CORE BLUEPRINT]
  │    │    ├── 📄 kustomization.yaml            │    Imports local resources

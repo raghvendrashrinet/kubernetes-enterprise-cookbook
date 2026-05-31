@@ -1,0 +1,6 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app       # <── Tells the engine: "Find the deployment named web-app"
+spec:
+  replicas: 5         # <── Tells the engine: "Surgically overwrite the old '1' with '5'"

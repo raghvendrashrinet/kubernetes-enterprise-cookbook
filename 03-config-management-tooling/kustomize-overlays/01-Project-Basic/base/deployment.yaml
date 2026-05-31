@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app       # <── The Engine matches on Group, Kind, and Name
+spec:
+  replicas: 1         # <── The row we want to change later
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine

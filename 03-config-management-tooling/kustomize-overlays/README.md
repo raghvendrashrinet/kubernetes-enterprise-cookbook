@@ -8,6 +8,13 @@ Unlike other tools that force you to mix programming logic (like variables, if/e
 ### 1. The Base: A folder containing your standard, clean Kubernetes manifests (like a Deployment or a Service) that represent the shared blueprint of your application.
 
 ### 2. The Overlay: A separate folder for a specific environment (like development or production). It imports the Base and contains instructions to cleanly modify or override specific lines (e.g., changing the replica count or adding environmental tags) before the code is sent to the cluster.
+Overlays 
+---------
+Consists evironment specific values
+ > Environment Name,
+   Request /Limits,
+   Labels.
+   Replicas
 ```
 ┌──────────────────────────────┐
                │         THE BASE             │

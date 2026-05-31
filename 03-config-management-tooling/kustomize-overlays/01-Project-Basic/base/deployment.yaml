@@ -1,14 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-app       # <── The Engine matches on Group, Kind, and Name
+  name: nginx-deployment
+  labels:
+    app: nginx
 spec:
-  replicas: 1         # <── The row we want to change later
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
   template:
     metadata:
       labels:
-        app: web-app
+        app: nginx
     spec:
       containers:
       - name: nginx
-        image: nginx:alpine
+        image: nginx:1.21
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config

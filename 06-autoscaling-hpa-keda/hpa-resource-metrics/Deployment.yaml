@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-api-scaler
+  namespace: team-alpha
+spec:
+  replicas: 2 # Initial baseline starting point
+  selector:
+    matchLabels:
+      app: order-api
+  template:
+    metadata:
+      labels:
+        app: order-api
+    spec:
+      containers:
+      - name: web-engine
+        image: nginx:alpine
+        # ⚠️ CRITICAL INTERMEDIATE RULE: HPA CANNOT function unless 
+        # container resource requests are explicitly defined!
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+          limits:
+            cpu: "200m"
+            memory: "128Mi"

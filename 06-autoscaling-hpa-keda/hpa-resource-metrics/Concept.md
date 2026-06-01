@@ -100,3 +100,29 @@ spec:
         type: Utilization
         averageUtilization: 50 # Trigger a scale-out if average CPU utilization crosses 50%
 ```
+### 📋 The Golden Rule of Autoscaling:
+> Look closely at the Deployment's resources.requests.cpu block (100m). The HPA target of 50% means that if the container's real-time processing usage averages more than 50m of CPU, the autoscaler will immediately kick in. If you forget to write the resources block, the HPA has no baseline math to calculate percentages against, and it will fail completely.
+-------------------------------
+### Deploy HPA 
+```
+# 1. Create the resources in your cluster
+kubectl apply -f hpa.yaml
+
+# 2. Open a separate terminal and start a live watch on your HPA tracking state:
+kubectl get hpa order-api-hpa -n team-alpha -w
+```
+#### 🛠️ Simulating the Flash Sale (The Load Test):
+```
+kubectl run container-stress-test --rm -i --tty --image=busybox -n team-alpha -- restart=Never -- \
+  sh -c "while true; do wget -q -O- http://order-api-scaler.team-alpha.svc.cluster.local; done"
+```
+#### 🔍 Watch the Metrics Rise:
+Switch back to your HPA watch terminal. Within 60 to 90 seconds, you will see the utilization numbers jump:
+```
+NAME             REFERENCE                     TARGETS    MINPODS   MAXPODS   REPLICAS   AGE
+order-api-hpa    Deployment/order-api-scaler   120%/50%   2         10        2          3m
+order-api-hpa    Deployment/order-api-scaler   120%/50%   2         10        6          4m
+order-api-hpa    Deployment/order-api-scaler   48%/50%    2         10        8          5m
+```
+- Observe how the replica count jumps from 2 to 6, and then up to 8 pods automatically.
+- If you close your stress-test terminal window, the load will stop. After a brief safety stabilization cooldown window (typically 5 minutes by default), the HPA will automatically scale the deployment back down to your baseline of 2 replicas,

@@ -255,3 +255,19 @@ spec:
   - Concept: If no rules match, send traffic to a designated service. 
   - Use Case: Serving a generic "404 Not Found" page or a default landing page
   
+---
+cli command 
+Host based 
+```
+kubectl create ingress ingress1 \
+  --rule="api.example.com/*=svc1:80" \
+  --dry-run=client -o yaml
+```
+
+Path Based
+```
+kubectl create ingress ingress1 \
+  --rule="example.com/api=api-service:80" \
+  --rule="example.com/web=web-service:80" \
+  --dry-run=client -o yaml   
+```

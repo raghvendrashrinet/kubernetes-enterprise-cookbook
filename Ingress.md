@@ -159,8 +159,99 @@ curl -H "Host: hello-world.local" http://<YOUR_INGRESS_CONTROLLER_EXTERNAL_IP>
 ```
 
 
+---
 
+Diferrent types of routing
+-
+Path based vs Host based:
 
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: routing-comparison
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  # --- PATH BASED SECTION ---
+  rules:
+  - host: example.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 80
+      - path: /web
+        pathType: Prefix
+        backend:
+          service:
+            name: web-service
+            port:
+              number: 80
+```
+ ## # --- HOST BASED SECTION ---
+```
+  # Note: These are separate entries in the 'rules' list
+  - host: api.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 80
+              
+  - host: web.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-service
+            port:
+              number: 80
+```
+---
 
-    
+#### Other Routing Strategy
+2. **TLS Termination (SSL/HTTPS)**  
+While technically a security feature, it dictates routing by handling encrypted traffic.  The Ingress Controller decrypts the HTTPS traffic at the edge and forwards unencrypted HTTP to the internal services.
+- Concept: Terminates SSL using a certificate stored in a Kubernetes Secret.
+- Use Case: Offloading the CPU-intensive encryption/decryption process from your application     pods and managing certificates centrally
+
+```
+spec:
+  tls:
+  - hosts:
+    - secure.example.com
+    secretName: tls-secret-name
+  rules:
+  - host: secure.example.com
+    # ... paths ...
+```
+
+3. **Traffic Splitting (Canary Deployments)**
+   Advanced controllers (like NGINX, Traefik, or Istio) allow splitting traffic between different versions of the same service based on weights or headers
+
+  - Concept: Send 90% of traffic to v1 (stable) and 10% to v2 (canary/new version).
+  - Use Case: Safely testing new releases with a small subset of users before a full rollout. This often uses specific annotations `(e.g., nginx.ingress.kubernetes.io/canary-weight: "10")`
+
+4. *Path Types (Matching Logic)*
+   - `Exact`: Matches the URL path exactly (e.g., /api matches only /api, not /api/v1).
+   - `Prefix`: Matches if the URL starts with the defined path (e.g., /api matches /api, /api/v1, /api/users).
+   - `ImplementationSpecific`: Allows controller-specific matching logic (often used for Regex support in NGINX)
+
+5. *Default Backend*
+    A catch-all rule for traffic that does not match any specific host or path rules.
+
+  - Concept: If no rules match, send traffic to a designated service. 
+  - Use Case: Serving a generic "404 Not Found" page or a default landing page
   

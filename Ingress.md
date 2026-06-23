@@ -43,10 +43,34 @@ Think of Ingress as a traffic cop or a smart router for your cluster.
 ```
   kubectl get all -n ingress-nginx
 ```
-What you will get:  
-1. The Controller Pod (pod/my-ingress-controller-...): This is the actual NGINX reverse-proxy instance executing your routing logic.
-2. The Cloud Load Balancer Service (service/my-ingress-controller-...): You will see a service of type: LoadBalancer
-3.  *  The Cloud Load Balancer Service (service/my-ingress-controller-...): You will see a service of type: LoadBalancer
+eg: Output from AKS Cluster
+```
+
+>kubectl get all -n  ingress-nginx
+    NAME                                                                  READY   STATUS    RESTARTS   AGE
+    pod/my-ingress-controller-ingress-nginx-controller-5c5766c6c9-kh26g   1/1     Running   0          4m18s
+
+    NAME                                                               TYPE           CLUSTER-IP     EXTERNAL-IP      PORT(S)                      AGE
+    service/my-ingress-controller-ingress-nginx-controller             LoadBalancer   10.0.104.237   20.235.194.119   80:30336/TCP,443:30363/TCP   4m18s
+    service/my-ingress-controller-ingress-nginx-controller-admission   ClusterIP      10.0.109.57    <none>           443/TCP                      4m18s
+
+    NAME                                                             READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/my-ingress-controller-ingress-nginx-controller   1/1     1            1           4m18s
+
+    NAME                                                                        DESIRED   CURRENT   READY   AGE
+    replicaset.apps/my-ingress-controller-ingress-nginx-controller-5c5766c6c9   1         1         1       4m18s
+
+```
+
+When you deploy the NGINX Ingress Controller, it is completely normal to see two services created in that namespace.
+
+1. *The LoadBalancer Service (The Frontend Gateway)*:
+   This is the actual entry point for all your external web traffic. It tells Azure to provision a physical Azure Load Balancer and assigns it the public EXTERNAL-IP
+2. *The ClusterIP Service (The Internal Security Guard)*:
+   This service is purely internal (<none> external IP) and is used for Validating Admission Webhooks.Traffic Flow: It does not handle your web traffic at all.
+
+What else you will get:  
+3. The Controller Pod (pod/my-ingress-controller-...): This is the actual NGINX reverse-proxy instance executing your routing logic.
 
 --- 
 ### Now lets deploy project with ingress (rules) 
@@ -69,7 +93,7 @@ spec:
     spec:
       containers:
       - name: web-container
-        image: nginxdemos/hello:plain
+        image: nginxdemos/hello:latest
         ports:
         - containerPort: 80
 ---

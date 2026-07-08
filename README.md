@@ -26,6 +26,12 @@ aks-production-kb/
 │
 ├── 09-enterprise-observability/         # (Fluentbit, Prometheus, Grafana)
 ├── 10-real-world-capstone-app/          # (Comprehensive E-Commerce Architecture)
+│   └── components/                      # Zero-Trust Legacy Migration Wrapper
+│       └── legacy-secure-sidecar/
+|               ├── README.md               # Explains the multi-sidecar architecture & use case
+|               ├── deployment.yaml         # The Multi-container Pod manifest (Envoy + Fluent Bit + App)
+|               ├── envoy-config.yaml       # ConfigMap containing Envoy TLS/Routing rules
+|               └── fluentbit-config.yaml   # ConfigMap containing log parsing & shipping logic
 └── 99-troubleshooting-handbook/          # (SRE Field Triaging Matrix)
 
 ```

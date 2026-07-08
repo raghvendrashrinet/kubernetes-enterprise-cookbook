@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: secure-legacy-service
+  namespace: production
+  labels:
+    app: legacy-transaction-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: legacy-transaction-api
+  template:
+    metadata:
+      labels:
+        app: legacy-transaction-api
+    spec:
+      volumes:
+        # Shared volume for log shipping between App and Fluent Bit
+        - name: shared-logs
+          emptyDir: {}
+        # Volume to mount TLS certs managed by cert-manager into Envoy
+        - name: tls-certs
+          secret:
+            secretName: legacy-app-tls-cert
+
+      containers:
+        # ========================================================
+        # 1. THE MAIN APPLICATION (Legacy, insecure, file-logging)
+        # ========================================================
+         eagle-legacy-app:
+          image: internal-registry.enterprise.io/finance/legacy-api:v2.4
+          env:
+            - name: LOG_FILE_PATH
+              value: "/var/log/app/transaction.log"
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /var/log/app
+          ports:
+            - containerPort: 8080
+              name: http-local
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: 500m
+              memory: 512Mi
+
+        # ========================================================
+        # 2. THE SECURITY SIDECAR (Envoy Proxy for TLS & Auth)
+        # ========================================================
+        security-sidecar-envoy:
+          image: envoyproxy/envoy:v1.28.0
+          args: ["-c", "/etc/envoy/envoy.yaml", "--service-cluster", "legacy-proxy"]
+          volumeMounts:
+            - name: tls-certs
+              mountPath: /etc/envoy/certs
+              readOnly: true
+          ports:
+            - containerPort: 8443
+              name: https-public # The public interface exposed to the K8s Service
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+
+        # ========================================================
+        # 3. THE OBSERVABILITY SIDECAR (Fluent Bit Log Forwarder)
+        # ========================================================
+        logging-sidecar-fluentbit:
+          image: fluent/fluent-bit:2.2.0
+          volumeMounts:
+            - name: shared-logs
+              mountPath: /var/log/app
+              readOnly: true
+          resources:
+            limits:
+              cpu: 250m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi

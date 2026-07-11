@@ -32,6 +32,11 @@ aks-production-kb/
 |               ├── deployment.yaml         # The Multi-container Pod manifest (Envoy + Fluent Bit + App)
 |               ├── envoy-config.yaml       # ConfigMap containing Envoy TLS/Routing rules
 |               └── fluentbit-config.yaml   # ConfigMap containing log parsing & shipping logic
+├──11-observability/    # The New Cookbook Chapter
+│   ├── README.md                # Main chapter index & recipe guides
+│   ├── manifests/               # (Optional) Observability specific tools
+│   └── troubleshooting-cheatsheet.md
 └── 99-troubleshooting-handbook/          # (SRE Field Triaging Matrix)
+
 
 ```

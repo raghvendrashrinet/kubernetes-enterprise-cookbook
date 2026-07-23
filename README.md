@@ -13,7 +13,10 @@ aks-production-kb/
 │   └── 03-gateway-api-aks-routing/      # 🔥 ADDED: Modern replacement for standard Ingress
 │
 ├── 05-service-mesh-istio/               # (mTLS, Traffic Shifting)
-│
+├── 05b-dapr-application-runtime/      # ⚡ ADDED: Distributed App Building Blocks
+│   ├── 01-state-management/           # Redis/Pluggable state stores
+│   ├── 02-pubsub-event-driven/        # Kafka/RabbitMQ decoupling
+│   └── README.md
 ├── 06-autoscaling-hpa-keda/             # (HPA, KEDA Event-Driven Scaling)
 │
 ├── 07-cluster-security-governance/      # 🔒 ADDED: Critical Job Requirement

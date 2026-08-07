@@ -16,7 +16,7 @@ Consists evironment specific values
    Labels.
    Replicas
 ```
-┌──────────────────────────────┐
+               ┌──────────────────────────────┐
                │         THE BASE             │
                │   (Generic core manifests)   │
                │   e.g., replicas: 1          │

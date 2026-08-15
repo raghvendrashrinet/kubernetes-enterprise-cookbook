@@ -59,7 +59,7 @@ kind: Kustomization
 resources:
   - deployment.yaml   # <── Tells Kustomize to load this file into memory
 ```
-2. The Production Overlay Files (kustomize-overlays/overlays/production/)
+2. The Production Overlay Files (`kustomize-overlays/overlays/production/`)
 Instead of copying the base deployment, we create two files: a small patch delta and the control configuration.
 overlays/production/replica-patch.yaml
 ```

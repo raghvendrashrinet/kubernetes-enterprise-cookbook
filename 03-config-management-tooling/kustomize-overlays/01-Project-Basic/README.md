@@ -32,7 +32,7 @@
 ```
 ### How the "Patching" Engine Works (Line-by-Line)
 Kustomize uses a process called Strategic Merge Patching. Instead of rewriting an entire file, you write a mini-snippet containing just enough metadata for Kustomize to match the target resource, followed by the exact lines you want to change.
-1. The Base Files (kustomize-overlays/base/)
+1. The Base Files (`kustomize-overlays/base/`)
 These files define your application's basic standard layout.
 
 base/deployment.yaml
@@ -60,8 +60,8 @@ resources:
   - deployment.yaml   # <── Tells Kustomize to load this file into memory
 ```
 2. The Production Overlay Files (`kustomize-overlays/overlays/production/`)
-Instead of copying the base deployment, we create two files: a small patch delta and the control configuration.
-overlays/production/replica-patch.yaml
+Instead of copying the base deployment, we create two files: a small patch delta and the control configuration.  
+`overlays/production/replica-patch.yaml`
 ```
 apiVersion: apps/v1
 kind: Deployment

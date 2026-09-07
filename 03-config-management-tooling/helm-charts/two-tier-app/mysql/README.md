@@ -32,6 +32,10 @@ env:
 - name=MYSQL_PASSWORD
   value:  {{  .Values.env.mysqlpassword }}
 ```
+### check the manifest
+```
+helm template mysql-chart
+```
 Now create a mysql deployment : `helm install mysql-1 mysql-chart`
 >[!NOTE]
 >COMMENT THE PROBES IN VALUES FILE, OR IT WILL FAIL

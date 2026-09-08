@@ -1,3 +1,19 @@
+### 
+- Build Docker file
+- Push image to docker hub
+```
+├── Dockerfile
+├── app.py
+├── requirements.txt
+└── templates/
+    └── index.html
+```
+
+### Create a new chart
+```
+ ## create a template chart
+  helm create flask-app
+```
 
 
 `values.yaml`

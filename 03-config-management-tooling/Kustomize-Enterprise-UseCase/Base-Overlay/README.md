@@ -32,11 +32,14 @@ resources:
   - service.yaml
 
 # Applies to all resources generated from this base
-commonLabels:
-  app.kubernetes.io/name: payment-service
-  app.kubernetes.io/managed-by: argocd
-base/deployment.yaml
+labels:
+  - pairs:
+      app.kubernetes.io/name: payment-service
+      app.kubernetes.io/managed-by: argocd
+    includeSelectors: false # Set to true only if you want to modify matchLabels
 ```
+base/deployment.yaml
+
 ```YAML
 apiVersion: apps/v1
 kind: Deployment
